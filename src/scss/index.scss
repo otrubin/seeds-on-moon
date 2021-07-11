@@ -1,0 +1,29 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@import "./buttons.scss";
+@import "./forms.scss";
+
+.container {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+h3 {
+  font-size: 1.5rem;
+  text-align: center;
+  color: gray;
+  margin-top: 10px;
+}

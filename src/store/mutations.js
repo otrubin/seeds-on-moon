@@ -1,0 +1,3 @@
+export default {
+  CHART_ADD_SEED_SERIES: "CHART_ADD_SEED_SERIES",
+};
