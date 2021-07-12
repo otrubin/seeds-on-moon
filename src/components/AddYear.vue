@@ -1,6 +1,6 @@
 <template>
   <div class="add-year">
-    <modal-window :isVisible="showAddYearWindow" @close="onCloseWindow">
+    <modal-window  ref="AddYearModalWindow">
       <div class="add-year-form">
         <select
           v-model="selectedYear"
@@ -51,8 +51,11 @@
 
 <script>
 /**
- * Компонент AddYear отвечает за добавление нового типа семян
+ * Компонент AddYear отвечает за добавление нового года
+ * Пользоватеть не может сам указать год, а может только выбрать из предоствленных
+ * год до периода или год после периода
  */
+// ! Не обработана ситуация, когда первоначально периода нет.
 
 import ModalWindow from "./ModalWindow.vue";
 
@@ -66,27 +69,30 @@ export default {
   },
   data() {
     return {
-      showAddYearWindow: false, // управление показом модального окна
       errors: {}, // объект ошибок, заполняется при валидации
-      selectedYear: "",
-      lastYear: "",
-      firstYear: "",
-      seeds: {},
+      selectedYear: "", // будет содержать значение выбранного года
+      lastYear: "", // следующий за периодом год
+      firstYear: "", // первый за периодом год
+      seeds: {}, // объект, у которого ключи имена семян, значения будут урожайность
     };
   },
   computed: {
     ...mapGetters(["getData"]),
-    /* свойство для отображений ошибок валидации */
+
+    /* Свойство для отображений ошибок валидации */
     errorMessages() {
       return Object.values(this.errors);
     },
   },
   methods: {
     ...mapActions(["addYear"]),
-    /* метод закрытия модального окна */
+
+    /* Метод закрытия модального окна */
     onCloseWindow() {
-      this.showAddYearWindow = false;
+      this.$refs.AddYearModalWindow.hide();
     },
+
+    /* Метод-событие добавления нового года */
     onAddYear() {
       // вызываем хелпер для валидации введенных пользователем данных
       const errors = getYearsErrors({
@@ -102,38 +108,49 @@ export default {
             el.classList.add("danger-control");
           }
         }
-      } else {
         // если ошибок нет
+      } else {
+        // закрываем окно
         this.onCloseWindow();
-        this.addYear(this._makeYear());
+        // вызываем экшен добавления года из vuex
+        this.addYear({
+          year: this.selectedYear,
+          firstYear: this.selectedYear == this.firstYear, //признак добавление года в начало списка лет
+          seeds: this.seeds,
+        });
       }
     },
+
+    /* Показываем модальное окно с формой добавления года */
     add() {
+      // создаем объект, у которого ключи имена семян, значения будут урожайность
       this.seeds = this.getData.series.reduce((acc, item) => {
         acc[item.name] = "";
         return acc;
       }, {});
+      // Получаем следующий за периодом год
       const lastYear = this.getData.categories[
         this.getData.categories.length - 1
       ];
       this.lastYear = +lastYear + 1;
+      // Получем первый за периодом год
       const firstYear = this.getData.categories[0];
       this.firstYear = +firstYear - 1;
-      this.showAddYearWindow = true;
+      // Сбрасываем состояние формы
       this._resetFormState();
+      // Показываем окно
+      this.$refs.AddYearModalWindow.show();
     },
+
+    /* При фокусировке сбрасываем признак ошибки для поля ввода */
     onFocus(event) {
       event.target.classList.remove("danger-control");
     },
-    _makeYear() {
-      return {
-        year: this.selectedYear,
-        firstYear: this.selectedYear == this.firstYear, //признак добавление года в начало списка лет
-        seeds: this.seeds,
-      };
-    },
+
+    /* Сброс состояния элементов формы */
     _resetFormState() {
       this.errors = {};
+      this.selectedYear = "";
       this.$el.querySelectorAll("[data-error-name]").forEach((el) => {
         el.classList.remove("danger-control");
       });

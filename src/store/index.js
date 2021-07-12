@@ -15,12 +15,13 @@ const {
 
 const store = new Vuex.Store({
   state: {
-    data: mockData, //данные относящиеся к отрисовке графика
+    data: mockData, //данные относящиеся к отрисовке графика см. ./mosk.js
   },
   getters: {
     getData: ({ data }) => data,
   },
   mutations: {
+    // мутация добавляет новый вид семян (новую серию в терминах Highcharts.js)
     [CHART_ADD_SEED_SERIES](state, seriesObj) {
       const obj = {
         categories: state.data.categories,
@@ -29,6 +30,7 @@ const store = new Vuex.Store({
       obj.series.push(seriesObj);
       state.data = obj;
     },
+    // мутация добавляет год перед текущим периодом
     [CHART_ADD_FIRST_YEAR](state, yearObj) {
       const obj = {
         categories: state.data.categories,
@@ -40,6 +42,7 @@ const store = new Vuex.Store({
       });
       state.data = obj;
     },
+    // мутация добавляет год после текущего периода
     [CHART_ADD_LAST_YEAR](state, yearObj) {
       const obj = {
         categories: state.data.categories,

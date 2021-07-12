@@ -11,6 +11,11 @@
 </template>
 
 <script>
+/**
+ * Компонент ControlPanel представлят панель управления
+ * в этом варианте скрипта там только 2 кнопки "Добавить вид семян" и "Добавить год"
+ */
+
 import AddSeedType from "./AddSeedType.vue";
 import AddYear from "./AddYear.vue";
 
@@ -24,9 +29,11 @@ export default {
     return {};
   },
   methods: {
+    /* Инициируем добавление нового вида семян */
     onAddSeed() {
       this.$refs.AddSeedType.add();
     },
+    /* Инициируем добавление года */
     onAddYear() {
       this.$refs.AddYear.add();
     },

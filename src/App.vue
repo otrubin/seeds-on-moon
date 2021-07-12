@@ -6,6 +6,10 @@
 </template>
 
 <script>
+/**
+ * Компонент App - корневой компонент
+ * отображает график и показывает панель управления
+ */
 import chartConfig from "./config/chart.config";
 import appConfig from "./config/app.config";
 

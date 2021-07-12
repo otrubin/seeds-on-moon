@@ -1,3 +1,7 @@
+/**
+ * Кофиг для передачи в Highcharts.chart()
+ */
+
 export default {
   chart: {
     type: "area",

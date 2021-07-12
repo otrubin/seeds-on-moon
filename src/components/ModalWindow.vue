@@ -7,13 +7,17 @@
 </template>
 
 <script>
+/**
+ * Компонент ModalWindow отвечает за показ модального окна
+ * содержимое окна вставляется через слот по умолчанию
+ */
+
 export default {
   name: "ModalWindow",
-  props: {
-    isVisible: {
-      type: Boolean,
-      default: false,
-    },
+  data() {
+    return {
+      isVisible: false,
+    }
   },
   computed: {
     modalWrapStyle() {
@@ -22,10 +26,15 @@ export default {
   },
   methods: {
     onModalClick(event) {
-      // если щелчок именно по фону, а не по окну возбуждем событие закрытия
       if(event.target === event.currentTarget) {
-        this.$emit('close');
+        this.hide();
       }
+    },
+    show() {
+      this.isVisible = true;
+    },
+    hide() {
+      this.isVisible = false;
     },
   },
 };

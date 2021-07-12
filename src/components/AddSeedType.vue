@@ -1,6 +1,6 @@
 <template>
   <div class="add-seed-type">
-    <modal-window :isVisible="showAddSeedWindow" @close="onCloseWindow">
+    <modal-window ref="AddSeedTypeModalWindow">
       <div class="add-seed-type-form">
         <h3>Укажите название семян:</h3>
         <div class="form-group">
@@ -62,6 +62,7 @@ import ModalWindow from "./ModalWindow.vue";
 
 import { mapGetters, mapActions } from "vuex";
 import { getSeedTypeErrors } from "../helpers/validate.helper";
+import { getRandomInRange } from "../helpers/app.helper";
 
 export default {
   name: "AddSeedType",
@@ -70,7 +71,6 @@ export default {
   },
   data() {
     return {
-      showAddSeedWindow: false, // управление показом модального окна
       seedName: "", // имя типа семян
       seedData: {}, // данные урожайности по годам
       errors: {}, // объект ошибок, заполняется при валидации
@@ -79,6 +79,7 @@ export default {
   },
   computed: {
     ...mapGetters(["getData"]),
+
     /* свойство для отображений ошибок валидации */
     errorMessages() {
       return Object.values(this.errors);
@@ -86,10 +87,12 @@ export default {
   },
   methods: {
     ...mapActions(["addSeedSeries"]),
+
     /* метод закрытия модального окна */
     onCloseWindow() {
-      this.showAddSeedWindow = false;
+      this.$refs.AddSeedTypeModalWindow.hide();
     },
+
     /* метод-событие добавления нового типа семян */
     onAddSeedType() {
       // вызываем хелпер для валидации введенных пользователем данных
@@ -106,31 +109,41 @@ export default {
             el.classList.add("danger-control");
           }
         }
-      } else {
         // если ошибок нет
+      } else {
+        // закрываем окно
         this.onCloseWindow();
+        // вызываем экшен добавления типа семян из vuex
         this.addSeedSeries(this._makeSeedSeries());
       }
     },
+
+    /* Показываем модальное окно с формой добавления типа семян */
     add() {
       this.seedData = this.getData.categories.reduce((acc, item) => {
         acc[item] = "";
         return acc;
       }, {});
+      // Сбрасываем состояние формы
       this._resetFormState();
-      if(this.isFirstShowing) {
-        this.seedName = 'Овес'
-        this.seedData['2025'] = '11';
-        this.seedData['2026'] = '21';
-        this.seedData['2027'] = '17';
-        this.seedData['2028'] = '25';
+      // если это первый показ окна, заполняем поля ввода тестовыми данными
+      if (this.isFirstShowing) {
+        this.seedName = "Рожь";
+        for (let key in this.seedData) {
+          this.seedData[key] = getRandomInRange(5, 20);
+        }
         this.isFirstShowing = false;
       }
-      this.showAddSeedWindow = true;
+      // показываем окно
+      this.$refs.AddSeedTypeModalWindow.show();
     },
+
+    /* При фокусировке сбрасываем признак ошибки для поля ввода */
     onFocus(event) {
       event.target.classList.remove("danger-control");
     },
+
+    /* Формируем объект серии (см. /store/mosk.js) для передачи в экшен vuex */
     _makeSeedSeries() {
       const keys = Object.keys(this.seedData);
       keys.sort((key1, key2) => key1 - key2);
@@ -138,9 +151,10 @@ export default {
         acc.push(+this.seedData[key]);
         return acc;
       }, []);
-
       return { name: this.seedName, data };
     },
+
+    /* Сброс состояния элементов формы */
     _resetFormState() {
       this.errors = {};
       this.seedName = "";
