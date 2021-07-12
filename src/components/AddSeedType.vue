@@ -4,12 +4,12 @@
       <div class="add-seed-type-form">
         <h3>Укажите название семян:</h3>
         <div class="form-group">
-          <label for="seed-name">Название не должно повторятся</label>
+          <label>Название не должно повторятся</label>
           <input
             type="text"
             v-model="seedName"
             class="form-control"
-            :id="_makeSeedInputId('name')"
+            data-error-name="name"
             @focus="onFocus"
           />
         </div>
@@ -27,7 +27,7 @@
                 v-model="seedData[year]"
                 type="text"
                 class="form-control"
-                :id="_makeSeedInputId(year)"
+                :data-error-name="year"
                 @focus="onFocus"
               />
             </div>
@@ -101,8 +101,7 @@ export default {
       if (errors) {
         this.errors = errors;
         for (let key in errors) {
-          let id = this._makeSeedInputId(key);
-          let el = document.getElementById(id);
+          let el = document.querySelector(`[data-error-name="${key}"]`);
           if (el) {
             el.classList.add("danger-control");
           }
@@ -142,13 +141,10 @@ export default {
 
       return { name: this.seedName, data };
     },
-    _makeSeedInputId(slug) {
-      return `seed-input-${slug}`;
-    },
     _resetFormState() {
       this.errors = {};
       this.seedName = "";
-      this.$el.querySelectorAll(".form-control").forEach((el) => {
+      this.$el.querySelectorAll("[data-error-name]").forEach((el) => {
         el.classList.remove("danger-control");
       });
     },

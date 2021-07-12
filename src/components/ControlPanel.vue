@@ -3,29 +3,33 @@
     <button class="btn btn-success" @click="onAddSeed">
       Добавить вид семян
     </button>
-    <button class="btn btn-primary">Добавить год</button>
+    <button class="btn btn-primary" @click="onAddYear">Добавить год</button>
 
     <add-seed-type ref="AddSeedType"></add-seed-type>
+    <add-year ref="AddYear"></add-year>
   </div>
 </template>
 
 <script>
 import AddSeedType from "./AddSeedType.vue";
+import AddYear from "./AddYear.vue";
 
 export default {
   name: "ControlPanel",
   components: {
     AddSeedType,
+    AddYear,
   },
   data() {
-    return {
-
-    };
+    return {};
   },
   methods: {
     onAddSeed() {
       this.$refs.AddSeedType.add();
-    }
+    },
+    onAddYear() {
+      this.$refs.AddYear.add();
+    },
   },
 };
 </script>
