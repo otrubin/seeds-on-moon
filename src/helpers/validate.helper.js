@@ -37,8 +37,8 @@ function _getSeedYearDataError(seedYearData, year) {
   if (!seedYearData.trim()) {
     return `Для ${year} года не указаны данные.`;
   }
-  if (isNaN(+seedYearData)) {
-    return `Для ${year} года введите число`;
+  if (!Number.isInteger(+seedYearData)) {
+    return `Для ${year} года введите целое число`;
   }
   return false;
 }
@@ -97,8 +97,8 @@ export function getSeedTypeErrors(validateData) {
   if (!seedData.trim()) {
     return `Для "${seedType}" не указаны данные.`;
   }
-  if (isNaN(+seedData)) {
-    return `Для "${seedType}" введите число`;
+  if (!Number.isInteger(+seedData)) {
+    return `Для "${seedType}" введите целое число`;
   }
   return false;
 }

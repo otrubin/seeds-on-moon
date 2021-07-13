@@ -15,6 +15,7 @@
         </div>
 
         <h3>Заполните урожайность по годам:</h3>
+        <p>Значения указывайте в штуках на метр квадратный (шт./м2)</p>
         <div class="years">
           <div
             class="year"
@@ -62,7 +63,7 @@ import ModalWindow from "./ModalWindow.vue";
 
 import { mapGetters, mapActions } from "vuex";
 import { getSeedTypeErrors } from "../helpers/validate.helper";
-import { getRandomInRange } from "../helpers/app.helper";
+import { getRandomInRange, getSeedName } from "../helpers/app.helper";
 
 export default {
   name: "AddSeedType",
@@ -74,7 +75,6 @@ export default {
       seedName: "", // имя типа семян
       seedData: {}, // данные урожайности по годам
       errors: {}, // объект ошибок, заполняется при валидации
-      isFirstShowing: true, //первый показ формы, надо показать демо данные
     };
   },
   computed: {
@@ -124,16 +124,10 @@ export default {
         acc[item] = "";
         return acc;
       }, {});
-      // Сбрасываем состояние формы
+      // сбрасываем состояние формы
       this._resetFormState();
-      // если это первый показ окна, заполняем поля ввода тестовыми данными
-      if (this.isFirstShowing) {
-        this.seedName = "Рожь";
-        for (let key in this.seedData) {
-          this.seedData[key] = getRandomInRange(5, 20);
-        }
-        this.isFirstShowing = false;
-      }
+      // заполняем поля ввода значениями по умолчанию
+      this._fillindDefaultData();
       // показываем окно
       this.$refs.AddSeedTypeModalWindow.show();
     },
@@ -141,6 +135,17 @@ export default {
     /* При фокусировке сбрасываем признак ошибки для поля ввода */
     onFocus(event) {
       event.target.classList.remove("danger-control");
+    },
+
+    /* Заполняем поля ввода значениями по умолчанию */
+    _fillindDefaultData() {
+      const existingNames = this.getData.series.map((item) => {
+        return item.name;
+      })
+      this.seedName = getSeedName(existingNames);
+      for (let key in this.seedData) {
+        this.seedData[key] = String(getRandomInRange(5, 20));
+      }
     },
 
     /* Формируем объект серии (см. /store/mosk.js) для передачи в экшен vuex */
@@ -169,7 +174,13 @@ export default {
 <style scoped>
 .add-seed-type-form h3 {
   color: #333;
-  margin: 2rem auto 1rem;
+  font-size: 1.3rem;
+  margin: 2rem auto 0;
+}
+.add-seed-type-form p {
+  text-align: center;
+  font-size: 0.9rem;
+  margin: 0.5rem auto 2rem;
 }
 .add-seed-type-form .years {
   display: flex;

@@ -1,6 +1,6 @@
 <template>
   <div class="add-year">
-    <modal-window  ref="AddYearModalWindow">
+    <modal-window ref="AddYearModalWindow">
       <div class="add-year-form">
         <select
           v-model="selectedYear"
@@ -15,10 +15,11 @@
         </select>
 
         <h3>Заполните урожайность семян в выбранном году</h3>
+        <p>Значения указывайте в штуках на метр квадратный (шт./м2)</p>
         <div class="seeds">
           <div class="seed" v-for="(value, seed, index) in seeds" :key="index">
             <div class="form-group">
-              <label>{{ seed }}</label>
+              <label>{{ seed }} (шт./м2)</label>
               <input
                 v-model="seeds[seed]"
                 type="text"
@@ -55,12 +56,13 @@
  * Пользоватеть не может сам указать год, а может только выбрать из предоствленных
  * год до периода или год после периода
  */
-// ! Не обработана ситуация, когда первоначально периода нет.
+// ! Не обработана ситуация, когда первоначального периода нет.
 
 import ModalWindow from "./ModalWindow.vue";
 
 import { mapGetters, mapActions } from "vuex";
 import { getYearsErrors } from "../helpers/validate.helper";
+import { getRandomInRange } from "../helpers/app.helper";
 
 export default {
   name: "AddYear",
@@ -128,16 +130,18 @@ export default {
         acc[item.name] = "";
         return acc;
       }, {});
-      // Получаем следующий за периодом год
+      // получаем следующий за периодом год
       const lastYear = this.getData.categories[
         this.getData.categories.length - 1
       ];
       this.lastYear = +lastYear + 1;
-      // Получем первый за периодом год
+      // получем первый за периодом год
       const firstYear = this.getData.categories[0];
       this.firstYear = +firstYear - 1;
-      // Сбрасываем состояние формы
+      // сбрасываем состояние формы
       this._resetFormState();
+      // заполняем поля ввода значениями по умолчанию
+      this._fillindDefaultData();
       // Показываем окно
       this.$refs.AddYearModalWindow.show();
     },
@@ -145,6 +149,13 @@ export default {
     /* При фокусировке сбрасываем признак ошибки для поля ввода */
     onFocus(event) {
       event.target.classList.remove("danger-control");
+    },
+
+    /* Заполняем поля ввода значениями по умолчанию */
+    _fillindDefaultData() {
+      for (let key in this.seeds) {
+        this.seeds[key] = String(getRandomInRange(5, 20));
+      }
     },
 
     /* Сброс состояния элементов формы */
@@ -163,7 +174,12 @@ export default {
 .add-year h3 {
   color: #333;
   font-size: 1.3rem;
-  margin: 2rem auto 1rem;
+  margin: 2rem auto 0;
+}
+.add-year p {
+  text-align: center;
+  font-size: 0.9rem;
+  margin: 0.5rem auto 2rem;
 }
 .add-year-form select {
   max-width: 300px;

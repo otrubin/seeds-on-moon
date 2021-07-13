@@ -2,7 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+// const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = {
@@ -42,22 +42,22 @@ module.exports = {
           "sass-loader",
         ],
       },
-      {
-        test: /\.(png|jpe?g|gif|svg)$/i,
-        loader: "file-loader",
-        options: {
-          outputPath: "img",
-          name(imgFullName) {
-            const dirRelativeToImg = path.relative(
-              path.join(__dirname, "src", "img"),
-              path.dirname(imgFullName)
-            );
-            return dirRelativeToImg
-              ? `${dirRelativeToImg}/[name].[ext]`
-              : "[name].[ext]";
-          },
-        },
-      },
+      // {
+      //   test: /\.(png|jpe?g|gif|svg)$/i,
+      //   loader: "file-loader",
+      //   options: {
+      //     outputPath: "img",
+      //     name(imgFullName) {
+      //       const dirRelativeToImg = path.relative(
+      //         path.join(__dirname, "src", "img"),
+      //         path.dirname(imgFullName)
+      //       );
+      //       return dirRelativeToImg
+      //         ? `${dirRelativeToImg}/[name].[ext]`
+      //         : "[name].[ext]";
+      //     },
+      //   },
+      // },
     ],
   },
   plugins: [
@@ -69,14 +69,14 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "[name].css",
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.join(__dirname, "src", "img"),
-          to: `img`,
-        },
-      ],
-    }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: path.join(__dirname, "src", "img"),
+    //       to: `img`,
+    //     },
+    //   ],
+    // }),
   ],
   devServer: {
     // hot: true,
